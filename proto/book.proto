@@ -35,16 +35,16 @@ message ReadBookReq {
 }
 
 message ReadBookRes {
-  Book blog = 1;
+  Book book = 1;
 }
 
 
 message UpdateBookReq {
-  Book blog = 1;
+  Book book = 1;
 }
 
 message UpdateBookRes {
-  Book blog = 1;
+  Book book = 1;
 }
 
 message DeleteBookReq {
@@ -58,5 +58,5 @@ message DeleteBookRes {
 message ListBookReq {}
 
 message ListBookRes {
-  Book blog = 1;
+  Book book = 1;
 }
