@@ -32,7 +32,7 @@ var readCmd = &cobra.Command{
 	If no blog post is found for the ID it will return a 'Not Found' error.`,
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		id, err := cmd.Flags().GetString("i")
+		id, err := cmd.Flags().GetString("id")
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ var readCmd = &cobra.Command{
 }
 
 func init() {
-	readCmd.Flags().StringP("i", "id", "", "The id of the blog")
+	readCmd.Flags().StringP("id", "i", "", "The id of the blog")
 	readCmd.MarkFlagRequired("id")
 	rootCmd.AddCommand(readCmd)
 
