@@ -48,7 +48,10 @@ You can use this client to create and read books`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
@@ -59,7 +62,7 @@ func init() {
 	fmt.Println("Starting Book Service Client")
 
 	//Establish context to timeout after 10 seconds if server does not respond
-	requestCtx, _ = context.WithTimeout(context.Background(), 10 * time.Second)
+	requestCtx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
 	//Establish insecure grpc options (no TLS)
 	requestOpts = grpc.WithInsecure()

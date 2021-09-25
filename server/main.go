@@ -38,8 +38,8 @@ func (s *BookServiceServer) CreateBook(ctx context.Context, req *bookpb.CreateBo
 	data := BookItem{
 		// ID:       primitive.NilObjectID,
 		AuthorID: book.GetAuthorId(),
-		Name:    book.GetName(),
-		Tag:  book.GetTag(),
+		Name:     book.GetName(),
+		Tag:      book.GetTag(),
 	}
 
 	//запись данных в БД
@@ -73,11 +73,11 @@ func (s *BookServiceServer) ReadBook(ctx context.Context, req *bookpb.ReadBookRe
 
 	// приводим к типу ответа
 	response := &bookpb.ReadBookRes{
-		Blog: &bookpb.Book{
+		Book: &bookpb.Book{
 			Id:       oid.Hex(),
 			AuthorId: data.AuthorID,
-			Name:    data.Name,
-			Tag:  data.Tag,
+			Name:     data.Name,
+			Tag:      data.Tag,
 		},
 	}
 	return response, nil
@@ -118,7 +118,7 @@ func (s *BookServiceServer) UpdateBook(ctx context.Context, req *bookpb.UpdateBo
 	update := bson.M{
 		"author_id": book.GetAuthorId(),
 		"name":      book.GetName(),
-		"tag":    book.GetTag(),
+		"tag":       book.GetTag(),
 	}
 
 	// конвертируем id для БД
@@ -141,14 +141,43 @@ func (s *BookServiceServer) UpdateBook(ctx context.Context, req *bookpb.UpdateBo
 		Book: &bookpb.Book{
 			Id:       decoded.ID.Hex(),
 			AuthorId: decoded.AuthorID,
-			Name:    decoded.Name,
-			Tag:  decoded.Tag,
+			Name:     decoded.Name,
+			Tag:      decoded.Tag,
 		},
 	}, nil
 }
 
 func (s *BookServiceServer) ListBook(req *bookpb.ListBookReq, stream bookpb.BookService_ListBookServer) error {
 
+	data := &BookItem{}
+	// возвращаем cursor
+	cursor, err := bookdb.Find(context.Background(), bson.M{})
+	if err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("Unknown internal error: %v", err))
+	}
+	defer cursor.Close(context.Background())
+
+	// cursor.Next() возвращает false если больше не будет экземпляров книг
+	for cursor.Next(context.Background()) {
+		err := cursor.Decode(data)
+		if err != nil {
+			return status.Errorf(codes.Unavailable, fmt.Sprintf("Could not decode data: %v", err))
+		}
+		// если нет ошибок, возвращаем книги через поток
+		stream.Send(&bookpb.ListBookRes{
+			Book: &bookpb.Book{
+				Id:       data.ID.Hex(),
+				AuthorId: data.AuthorID,
+				Name:     data.Name,
+				Tag:      data.Tag,
+			},
+		})
+	}
+
+	if err := cursor.Err(); err != nil {
+		return status.Errorf(codes.Internal, fmt.Sprintf("Unkown cursor error: %v", err))
+	}
+	return nil
 }
 
 func main() {
