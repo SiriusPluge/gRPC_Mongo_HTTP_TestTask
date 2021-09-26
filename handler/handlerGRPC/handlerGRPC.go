@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"gRPC_Mongo_HTTP_TestTask"
 	bookpb "gRPC_Mongo_HTTP_TestTask/proto"
-	"gRPC_Mongo_HTTP_TestTask/store"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,6 +21,8 @@ type BookItem struct {
 	Name     string             `bson:"name"`
 	Tag      string             `bson:"tag"`
 }
+
+var mongoCtx context.Context
 
 func (s *BookServiceServer) CreateBook(ctx context.Context, req *bookpb.CreateBookReq) (*bookpb.CreateBookRes, error) {
 	//преобразования данных в BSON
@@ -57,7 +57,7 @@ func (s *BookServiceServer) ReadBook(ctx context.Context, req *bookpb.ReadBookRe
 	}
 
 	// находим книгу по ID и записываем декодированную информацию
-	result := bookdb.FindOne(ctx, bson.M{"_id": oid})
+	result := gRPC_Mongo_HTTP_TestTask.Collections.FindOne(ctx, bson.M{"_id": oid})
 	data := BookItem{}
 	if err := result.Decode(&data); err != nil {
 		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Could not find blog with Object Id %s: %v", req.GetId(), err))
@@ -83,7 +83,7 @@ func (s *BookServiceServer) DeleteBook(ctx context.Context, req *bookpb.DeleteBo
 	}
 
 	// находим и удаляем книгу в БД
-	_, err = bookdb.DeleteOne(ctx, bson.M{"_id": oid})
+	_, err = gRPC_Mongo_HTTP_TestTask.Collections.DeleteOne(ctx, bson.M{"_id": oid})
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Could not find/delete blog with id %s: %v", req.GetId(), err))
 	}
@@ -117,7 +117,7 @@ func (s *BookServiceServer) UpdateBook(ctx context.Context, req *bookpb.UpdateBo
 	filter := bson.M{"_id": oid}
 
 	// возвращаем обнавленный документ БД
-	result := bookdb.FindOneAndUpdate(ctx, filter, bson.M{"$set": update}, options.FindOneAndUpdate().SetReturnDocument(1))
+	result := gRPC_Mongo_HTTP_TestTask.Collections.FindOneAndUpdate(ctx, filter, bson.M{"$set": update}, options.FindOneAndUpdate().SetReturnDocument(1))
 
 	// декод для ответа
 	decoded := BookItem{}

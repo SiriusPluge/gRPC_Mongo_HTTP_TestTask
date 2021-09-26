@@ -1,16 +1,12 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"gRPC_Mongo_HTTP_TestTask"
 	"gRPC_Mongo_HTTP_TestTask/handler/handlerGRPC"
-	"gRPC_Mongo_HTTP_TestTask/store"
 
 	bookpb "gRPC_Mongo_HTTP_TestTask/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"log"
 	"net"
 	"os"
@@ -19,10 +15,9 @@ import (
 
 func main() {
 
-	bd, err := gRPC_Mongo_HTTP_TestTask.ConnectDatabase()
-	if err != nil {
-		log.Fatalf("Error for connecting to MongoDB: %v", err)
-	}
+	//Подключаемся к БД
+	gRPC_Mongo_HTTP_TestTask.ConnectDatabase()
+	log.Println("Connecting to MongoDB!")
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	fmt.Println("Starting server on port :50051...")
@@ -54,11 +49,21 @@ func main() {
 
 	<-c
 
-	fmt.Println("\nStopping the server...")
 	s.Stop()
-	listener.Close()
-	fmt.Println("Closing MongoDB connection")
-	gRPC_Mongo_HTTP_TestTask.DBClose()
+	fmt.Println("\nStopping the server...")
+
+	err = listener.Close()
+	if err != nil {
+		log.Println("Error closing MongoDB connection")
+	} else {
+		fmt.Println("Closing MongoDB connection")
+	}
+
+	err = gRPC_Mongo_HTTP_TestTask.DBClose()
+	if err != nil {
+		log.Println("Error in closed Connection to MongoDB.")
+	}
 	log.Println("closing MongoDB connection")
+
 	fmt.Println("Done.")
 }

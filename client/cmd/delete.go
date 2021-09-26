@@ -44,7 +44,7 @@ var deleteCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Succesfully deleted the blog with id %s\n", id)
+		fmt.Printf("Succesfully deleted the book with id %s\n", id)
 		return nil
 	},
 }
