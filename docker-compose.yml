@@ -8,8 +8,8 @@ services:
     networks:
       - server
 
-  server:
-    container_name: server
+  serverGRPC:
+    container_name: serverGRPC
     build:
       context: .
       dockerfile: Dockerfile
@@ -23,7 +23,22 @@ services:
     depends_on:
       - mongodb
     networks:
-      - server
+      - serverGRPC
+    tty: true
+
+  serverHTTP:
+    container_name: serverHTTP
+    restart: always
+    links:
+      - mongodb:mongo
+    environment:
+      - DEBUG=true
+    ports:
+      - "4112:4112"
+    depends_on:
+      - mongodb
+    networks:
+      - serverHTTP
     tty: true
 
 networks:

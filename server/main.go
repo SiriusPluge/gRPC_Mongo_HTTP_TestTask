@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"gRPC_Mongo_HTTP_TestTask"
-	"gRPC_Mongo_HTTP_TestTask/handler/handlerGRPC"
+	"gRPC_Mongo_HTTP_TestTask/handler"
+	"gRPC_Mongo_HTTP_TestTask/server/serverHTTP"
 
 	bookpb "gRPC_Mongo_HTTP_TestTask/proto"
 	"google.golang.org/grpc"
@@ -19,8 +20,13 @@ func main() {
 	gRPC_Mongo_HTTP_TestTask.ConnectDatabase()
 	log.Println("Connecting to MongoDB!")
 
+	//Подключаем serverHTTP
+	serverHTTP.NewServerHTTP()
+	log.Println("Connecting serverHTTP")
+
+	//
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	fmt.Println("Starting server on port :50051...")
+	fmt.Println("Starting serverGRPC on port :50051...")
 
 	//Прослушиваем порт
 	listener, err := net.Listen("tcp", ":50051")
@@ -28,14 +34,14 @@ func main() {
 		log.Fatalf("Unable to listen on port :50051: %v", err)
 	}
 
-	//инициализируем сервер
+	//инициализируем сервер gRPC
 	opts := []grpc.ServerOption{}
 	s := grpc.NewServer(opts...)
-	srv := &handlerGRPC.BookServiceServer{}
+	srv := &handler.BookServiceServer{}
 
 	bookpb.RegisterBookServiceServer(s, srv)
 
-	//Запускаем сервер \ Отключаемся командой CTRL+C
+	//Запускаем сервер gRPC \ Отключаемся командой CTRL+C
 	go func() {
 		if err := s.Serve(listener); err != nil {
 			log.Fatalf("Failed to serve: %v", err)
@@ -52,6 +58,7 @@ func main() {
 	s.Stop()
 	fmt.Println("\nStopping the server...")
 
+	//Закрываем прослушивание порта 50051
 	err = listener.Close()
 	if err != nil {
 		log.Println("Error closing MongoDB connection")
@@ -59,6 +66,7 @@ func main() {
 		fmt.Println("Closing MongoDB connection")
 	}
 
+	//Отсоединяемся от MongoDB
 	err = gRPC_Mongo_HTTP_TestTask.DBClose()
 	if err != nil {
 		log.Println("Error in closed Connection to MongoDB.")

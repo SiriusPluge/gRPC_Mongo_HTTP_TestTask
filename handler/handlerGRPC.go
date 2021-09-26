@@ -1,4 +1,4 @@
-package handlerGRPC
+package handler
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 type BookServiceServer struct {
@@ -25,6 +26,9 @@ type BookItem struct {
 var mongoCtx context.Context
 
 func (s *BookServiceServer) CreateBook(ctx context.Context, req *bookpb.CreateBookReq) (*bookpb.CreateBookRes, error) {
+
+	log.Println("handling book create")
+
 	//преобразования данных в BSON
 	book := req.GetBook()
 	data := BookItem{
