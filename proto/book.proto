@@ -10,7 +10,6 @@ service BookService {
   rpc ReadBook(ReadBookReq) returns (ReadBookRes);
   rpc UpdateBook(UpdateBookReq) returns (UpdateBookRes);
   rpc DeleteBook(DeleteBookReq) returns (DeleteBookRes);
-  rpc ListBook(ListBookReq) returns (stream ListBookRes);
 }
 
 
@@ -53,10 +52,4 @@ message DeleteBookReq {
 
 message DeleteBookRes {
   bool success = 1;
-}
-
-message ListBookReq {}
-
-message ListBookRes {
-  Book book = 1;
 }

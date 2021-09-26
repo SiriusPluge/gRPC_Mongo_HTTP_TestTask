@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    networks:
+      - server
+
+  server:
+    container_name: server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    links:
+      - mongodb:mongo
+    environment:
+      - DEBUG=true
+    ports:
+      - "50051:50051"
+    depends_on:
+      - mongodb
+    networks:
+      - server
+    tty: true
+
+networks:
+  server:
+
+
+
