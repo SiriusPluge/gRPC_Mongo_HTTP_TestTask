@@ -15,27 +15,6 @@ type BookItem struct {
 	Tag      string `json:"tag"`
 }
 
-////Обработчик запросов
-//func (s *Server) BookHandler(w http.ResponseWriter, req *http.Request) {
-//	if req.URL.Path == "/api/user" {
-//		if req.Method == http.MethodPost {
-//			s.CreateBookHandler(w, req)
-//		}
-//	} else if req.URL.Path == "/api/user/{id}" {
-//		if req.Method == http.MethodGet {
-//			id := req.URL.Query().Get("id")
-//			s.GetBookHandler(w, req, id)
-//		} else if req.Method == http.MethodDelete {
-//			id := req.URL.Query().Get("id")
-//			s.DeleteBookHandler(w, req, id)
-//		} else if req.Method == http.MethodPut {
-//			id := req.URL.Query().Get("id")
-//			s.UpdateBookHandler(w, req, id)
-//		}
-//	}
-//}
-
-
 func (s *Server) CreateBookHandler(w http.ResponseWriter, req *http.Request)  {
 
 	log.Printf("handling book create at %s\n", req.URL.Path)
