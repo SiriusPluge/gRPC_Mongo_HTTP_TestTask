@@ -52,7 +52,6 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	log.Println("func execute/ root")
 }
 
 func init() {
@@ -61,15 +60,13 @@ func init() {
 
 	//After Cobra root config init, initialize the client
 	fmt.Println("Starting Book Service Client")
-	log.Println("Starting Book Service Client")
+
 	//Establish context to timeout after 10 seconds if server does not respond
 	requestCtx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
-	log.Println("Establish context to timeout after 10 seconds if server does not respond")
 	//Establish insecure grpc options (no TLS)
 	requestOpts = grpc.WithInsecure()
 
-	log.Println("Establish insecure grpc options (no TLS)")
 	// Dial the server, returns a client connection
 	conn, err := grpc.Dial("localhost:50051", requestOpts)
 	if err != nil {
@@ -78,7 +75,6 @@ func init() {
 
 	//Instantiate the BlogServiceClient with our client connection to the server
 	client = bookpb.NewBookServiceClient(conn)
-	log.Println("client book service")
 }
 
 // initConfig reads in config file and ENV variables if set.
