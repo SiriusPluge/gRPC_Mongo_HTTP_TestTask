@@ -35,7 +35,7 @@ func New() *BookStore {
 
 var mongoCtx context.Context
 
-func (s *Server) CreateBook(author_ID string, name string, tag string) string {
+func (s *Server) CreateBook(author_ID string, name string, tag string) map[string]string{
 	s.Store.Lock()
 	defer s.Store.Unlock()
 
@@ -55,7 +55,10 @@ func (s *Server) CreateBook(author_ID string, name string, tag string) string {
 	oid := result.InsertedID.(primitive.ObjectID)
 	createBooks.ID = oid.Hex()
 
-	return createBooks.ID
+	m := make(map[string]string)
+	m["_id"] = createBooks.ID
+
+	return m
 }
 
 func (s *Server) GetUser(id string) *bookpb.Book {

@@ -36,7 +36,7 @@ type BookItem struct {
 //}
 
 
-func (s *Server) CreateBookHandler(w http.ResponseWriter, req *http.Request) {
+func (s *Server) CreateBookHandler(w http.ResponseWriter, req *http.Request)  {
 
 	log.Printf("handling book create at %s\n", req.URL.Path)
 
