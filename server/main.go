@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"gRPC_Mongo_HTTP_TestTask"
 	"gRPC_Mongo_HTTP_TestTask/handler"
-	"gRPC_Mongo_HTTP_TestTask/server/serverHTTP"
-
 	bookpb "gRPC_Mongo_HTTP_TestTask/proto"
+	"gRPC_Mongo_HTTP_TestTask/server/serverHTTP"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -14,19 +13,61 @@ import (
 	"os/signal"
 )
 
+//type serverGRPC struct {
+//	serverGRPC *grpc.Server
+//}
+//
+//func (sg *serverGRPC) NewServerGRPC() {
+//	//Прослушиваем порт
+//	listener, err := net.Listen("tcp", ":50051")
+//	if err != nil {
+//		log.Fatalf("Unable to listen on port :50051: %v", err)
+//	}
+//
+//	//инициализируем сервер gRPC
+//	opts := []grpc.ServerOption{}
+//	s := grpc.NewServer(opts...)
+//	srv := &handler.BookServiceServer{}
+//
+//	bookpb.RegisterBookServiceServer(s, srv)
+//
+//	//Запускаем сервер gRPC \ Отключаемся командой CTRL+C
+//	go func() {
+//		if err := s.Serve(listener); err != nil {
+//			log.Fatalf("Failed to serve: %v", err)
+//		}
+//	}()
+//	fmt.Println("Server succesfully started on port :50051")
+//
+//	c := make(chan os.Signal)
+//
+//	signal.Notify(c, os.Interrupt)
+//
+//	<-c
+//
+//	s.Stop()
+//	fmt.Println("\nStopping the server...")
+//
+//	//Закрываем прослушивание порта
+//	err = listener.Close()
+//	if err != nil {
+//		log.Println("Error closing MongoDB connection")
+//	} else {
+//		fmt.Println("Closing MongoDB connection")
+//	}
+//
+//}
+
 func main() {
 
-	//Подключаемся к БД
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	gRPC_Mongo_HTTP_TestTask.ConnectDatabase()
 	log.Println("Connecting to MongoDB!")
 
-	//Подключаем serverHTTP
-	serverHTTP.NewServerHTTP()
-	log.Println("Connecting serverHTTP")
-
-	//
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	fmt.Println("Starting serverGRPC on port :50051...")
+	//serverGRPC.NewServerGRPC()
+	//fmt.Println("Starting serverGRPC on port :50051...")
+	//log.Println("Connecting serverGRPC")
 
 	//Прослушиваем порт
 	listener, err := net.Listen("tcp", ":50051")
@@ -41,6 +82,7 @@ func main() {
 
 	bookpb.RegisterBookServiceServer(s, srv)
 
+
 	//Запускаем сервер gRPC \ Отключаемся командой CTRL+C
 	go func() {
 		if err := s.Serve(listener); err != nil {
@@ -53,25 +95,20 @@ func main() {
 
 	signal.Notify(c, os.Interrupt)
 
+	//Подключаем serverHTTP
+	serverHTTP.NewServerHTTP()
+	log.Println("Connecting serverHTTP")
+
 	<-c
 
-	s.Stop()
 	fmt.Println("\nStopping the server...")
+	s.Stop()
 
-	//Закрываем прослушивание порта 50051
-	err = listener.Close()
-	if err != nil {
-		log.Println("Error closing MongoDB connection")
-	} else {
-		fmt.Println("Closing MongoDB connection")
-	}
+	//Закрываем прослушивание порта
+	listener.Close()
 
 	//Отсоединяемся от MongoDB
-	err = gRPC_Mongo_HTTP_TestTask.DBClose()
-	if err != nil {
-		log.Println("Error in closed Connection to MongoDB.")
-	}
 	log.Println("closing MongoDB connection")
 
-	fmt.Println("Done.")
+	log.Println("Done.")
 }

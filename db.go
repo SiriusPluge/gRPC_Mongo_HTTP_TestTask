@@ -14,7 +14,7 @@ var Collections *mongo.Collection
 func ConnectDatabase() {
 	log.Println("Database connecting...")
 	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongo:27017")
 
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -25,7 +25,6 @@ func ConnectDatabase() {
 
 	// Check the connection
 	err = Client.Ping(context.TODO(), nil)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,9 +32,4 @@ func ConnectDatabase() {
 	log.Println("Database Connected.")
 
 	Collections = client.Database("mydb").Collection("book")
-}
-
-func DBClose() error {
-	ctx := context.Background()
-	return Client.Disconnect(ctx)
 }

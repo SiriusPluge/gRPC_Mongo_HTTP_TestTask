@@ -50,6 +50,8 @@ func (s *BookServiceServer) CreateBook(ctx context.Context, req *bookpb.CreateBo
 	oid := result.InsertedID.(primitive.ObjectID)
 	book.Id = oid.Hex()
 
+
+
 	return &bookpb.CreateBookRes{Book: book}, nil
 }
 
