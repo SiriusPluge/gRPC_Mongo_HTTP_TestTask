@@ -6,11 +6,11 @@
 2. Using MongoDB
 
 
-## To use it, you must enter the following commands:
-# Cloning the repository
+# To use it, you must enter the following commands:
+## Cloning the repository
 1. `cd $HOME/src/github.com/`
 2. `git clone github.com/SiriusPluge/gRPC_Mongo_HTTP_TestTask`
-# Docker build:
+## Docker build:
 3. `sudo docker build -t my-server -f Dockerfile .`
 4. `docker-compose up -d`
 
